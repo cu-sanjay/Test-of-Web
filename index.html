@@ -10,26 +10,38 @@ body {
   justify-content: center;
   align-items: center;
   font-family: Arial, sans-serif;
-  font-size: 1.5rem;
-  transition: background 0.2s;
+  font-size: 2rem;
   color: white;
+  transition: background 0.2s;
 }
+.upright { background: #27ae60; }
+.upside { background: #c0392b; }
+.land-left { background: #2980b9; }
+.land-right { background: #8e44ad; }
 </style>
 </head>
 <body>
-<div id="output">Move your phone...</div>
+<div id="output">Rotate your phone...</div>
 <script>
 const out = document.getElementById('output');
-function handleOrientation(event) {
-  const alpha = Math.round(event.alpha);
-  const beta = Math.round(event.beta);
-  const gamma = Math.round(event.gamma);
-  out.textContent = `Alpha: ${alpha}° Beta: ${beta}° Gamma: ${gamma}°`;
-  const r = Math.abs(alpha) % 255;
-  const g = Math.abs(beta) % 255;
-  const b = Math.abs(gamma) % 255;
-  document.body.style.background = `rgb(${r},${g},${b})`;
+
+function detectLayout(beta, gamma) {
+  if (beta > 45 && beta < 135) return 'upright';
+  if (beta < -45 && beta > -135) return 'upside';
+  if (gamma > 45) return 'land-right';
+  if (gamma < -45) return 'land-left';
+  return 'upright';
 }
+
+function handleOrientation(e) {
+  const layout = detectLayout(e.beta, e.gamma);
+  document.body.className = layout;
+  if (layout === 'upright') out.textContent = 'Portrait Upright';
+  if (layout === 'upside') out.textContent = 'Portrait Upside Down';
+  if (layout === 'land-left') out.textContent = 'Landscape Left';
+  if (layout === 'land-right') out.textContent = 'Landscape Right';
+}
+
 if (window.DeviceOrientationEvent) {
   window.addEventListener('deviceorientation', handleOrientation);
 } else {
