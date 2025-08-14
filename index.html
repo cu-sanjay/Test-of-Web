@@ -1,65 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4-Way Orientation Detector</title>
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; text-align: center; }
-    .layout {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 2rem;
-      color: white;
-    }
-    .portrait-primary { background: #27ae60; }
-    .portrait-secondary { background: #c0392b; }
-    .landscape-primary { background: #2980b9; }
-    .landscape-secondary { background: #8e44ad; }
-  </style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.box {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 2rem;
+}
+.box1 { background: #27ae60; }
+.box2 { background: #2980b9; }
+@media (orientation: landscape) {
+  .container {
+    flex-direction: row;
+  }
+}
+</style>
 </head>
 <body>
-  <div id="app" class="layout">Detecting...</div>
-
-  <script>
-    const app = document.getElementById("app");
-
-    function detectOrientation() {
-      let type = "";
-
-      // Modern browsers
-      if (screen.orientation && screen.orientation.type) {
-        type = screen.orientation.type;
-      }
-      // iOS Safari fallback
-      else if (typeof window.orientation !== "undefined") {
-        switch (window.orientation) {
-          case 0: type = "portrait-primary"; break;
-          case 180: type = "portrait-secondary"; break;
-          case 90: type = "landscape-primary"; break;
-          case -90: type = "landscape-secondary"; break;
-          default: type = "unknown";
-        }
-      } else {
-        type = "unknown";
-      }
-
-      // Apply layout
-      app.className = `layout ${type}`;
-      app.textContent = `Orientation: ${type}`;
-    }
-
-    // Listeners
-    if (screen.orientation) {
-      screen.orientation.addEventListener("change", detectOrientation);
-    }
-    window.addEventListener("orientationchange", detectOrientation);
-    window.addEventListener("resize", detectOrientation);
-
-    // Initial run
-    detectOrientation();
-  </script>
+<div class="container">
+  <div class="box box1">Box 1</div>
+  <div class="box box2">Box 2</div>
+</div>
 </body>
 </html>
