@@ -1,425 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Orientation Tools</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<style>
-  :root { --bg:#111; --fg:#fff; --muted:#9aa0a6; --accent:#4c8bf5; --ok:#2ecc71; --warn:#f39c12; --err:#e74c3c; }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:var(--bg); color:var(--fg); }
-  header { padding:12px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #222; position:sticky; top:0; background:#0c0c0c; z-index:2; }
-  h1 { font-size:18px; margin:0; }
-  #mode { font-size:14px; color:var(--muted); }
-  #gate { display:none; padding:12px 16px; background:#1a1a1a; border-bottom:1px solid #222; }
-  #gate button { padding:10px 14px; border:0; border-radius:12px; background:var(--accent); color:#fff; font-weight:600; }
-  main { padding:16px; }
-  .view { display:none; }
-  .view.active { display:block; }
-  .panel { background:#141414; border:1px solid #222; border-radius:16px; padding:16px; }
-  .title { font-size:16px; margin:0 0 12px 0; color:#e8eaed; }
-  .big { font-variant-numeric: tabular-nums; font-size:40px; font-weight:700; letter-spacing:1px; text-align:center; margin:8px 0 16px 0; }
-  .row { display:flex; gap:10px; }
-  .row + .row { margin-top:10px; }
-  input, button, select { width:100%; padding:12px 14px; border-radius:12px; border:1px solid #2a2a2a; background:#0f0f0f; color:#e8eaed; font-size:16px; }
-  button.primary { background:var(--accent); border:0; color:#fff; font-weight:700; }
-  button.ok { background:var(--ok); border:0; color:#000; font-weight:700; }
-  button.warn { background:var(--warn); border:0; color:#000; font-weight:700; }
-  button.err { background:var(--err); border:0; color:#fff; font-weight:700; }
-  .hint { font-size:12px; color:var(--muted); margin-top:8px; text-align:center; }
-  .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .pill { display:inline-block; padding:4px 10px; border-radius:999px; background:#1f1f1f; border:1px solid #2a2a2a; font-size:12px; color:#cfcfcf; }
-  .center { text-align:center; }
-  .spacer { height:12px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>OrientationMaster - Smart Device Tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <h1>Orientation Tools</h1>
-    <div id="mode">Detecting…</div>
-  </header>
-
-  <section id="gate">
-    <div class="row">
-      <button id="enableMotion" class="primary">Enable Motion Access</button>
-    </div>
-    <div class="hint">Required on iOS to read device orientation in real time.</div>
-  </section>
-
-  <main>
-    <div class="panel center">
-      <span id="status" class="pill">Waiting for motion…</span>
-      <div class="spacer"></div>
-      <div id="angles" class="hint">α 0° · β 0° · γ 0°</div>
-    </div>
-
-    <div id="alarm" class="view active">
-      <div class="spacer"></div>
-      <div class="panel">
-        <h2 class="title">Alarm Clock</h2>
-        <div class="big" id="clockNow">00:00:00</div>
-        <div class="row">
-          <input id="alarmTime" type="time" inputmode="numeric">
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-mobile-alt"></i>
+                <h1>OrientationMaster</h1>
+            </div>
+            <div class="orientation-status">
+                <span id="mode" class="status-text">Detecting...</span>
+                <div class="status-indicator" id="statusIndicator"></div>
+            </div>
         </div>
-        <div class="row">
-          <button id="setAlarm" class="ok">Set Alarm</button>
-          <button id="clearAlarm" class="err">Clear</button>
+    </header>
+
+    <section id="permissionGate" class="permission-gate hidden">
+        <div class="permission-content">
+            <i class="fas fa-shield-alt permission-icon"></i>
+            <h3>Motion Permission Required</h3>
+            <p>Enable device orientation access to use all features on iOS devices.</p>
+            <button id="enableMotion" class="btn btn-primary">
+                <i class="fas fa-unlock"></i>
+                Enable Motion Access
+            </button>
         </div>
-        <div class="row">
-          <button id="testBeep" class="warn">Test Sound</button>
+    </section>
+
+    <main class="main-content">
+        <div class="orientation-info">
+            <div class="angles-display">
+                <span id="angles" class="angles-text">α 0° · β 0° · γ 0°</span>
+                <span id="status" class="connection-status">Waiting for motion...</span>
+            </div>
         </div>
-        <div class="hint" id="alarmHint">No alarm set</div>
-      </div>
-    </div>
 
-    <div id="timer" class="view">
-      <div class="spacer"></div>
-      <div class="panel">
-        <h2 class="title">Timer</h2>
-        <div class="grid">
-          <input id="timerMin" type="number" min="0" placeholder="Minutes">
-          <input id="timerSec" type="number" min="0" max="59" placeholder="Seconds">
+        <!-- Alarm Clock View (Portrait Upright) -->
+        <div id="alarm" class="view active">
+            <div class="tool-container">
+                <div class="tool-header">
+                    <i class="fas fa-alarm-clock"></i>
+                    <h2>Alarm Clock</h2>
+                    <span class="orientation-hint">Portrait Upright</span>
+                </div>
+                
+                <div class="current-time">
+                    <div id="clockNow" class="time-display">00:00:00</div>
+                    <div class="date-display" id="currentDate"></div>
+                </div>
+
+                <div class="alarm-controls">
+                    <div class="input-group">
+                        <label for="alarmTime">
+                            <i class="fas fa-clock"></i>
+                            Set Alarm Time
+                        </label>
+                        <input id="alarmTime" type="time" class="time-input">
+                    </div>
+
+                    <div class="button-group">
+                        <button id="setAlarm" class="btn btn-success">
+                            <i class="fas fa-bell"></i>
+                            Set Alarm
+                        </button>
+                        <button id="clearAlarm" class="btn btn-danger">
+                            <i class="fas fa-bell-slash"></i>
+                            Clear
+                        </button>
+                    </div>
+
+                    <button id="testBeep" class="btn btn-warning">
+                        <i class="fas fa-volume-up"></i>
+                        Test Sound
+                    </button>
+
+                    <div id="alarmHint" class="status-message">No alarm set</div>
+                </div>
+            </div>
         </div>
-        <div class="big" id="timerDisplay">00:00</div>
-        <div class="row">
-          <button id="timerStart" class="ok">Start</button>
-          <button id="timerPause" class="warn">Pause</button>
+
+        <!-- Timer View (Portrait Upside Down) -->
+        <div id="timer" class="view">
+            <div class="tool-container">
+                <div class="tool-header">
+                    <i class="fas fa-hourglass-half"></i>
+                    <h2>Timer</h2>
+                    <span class="orientation-hint">Portrait Upside Down</span>
+                </div>
+
+                <div class="timer-setup">
+                    <div class="time-inputs">
+                        <div class="input-group">
+                            <label>Minutes</label>
+                            <input id="timerMin" type="number" min="0" max="999" placeholder="0" class="number-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Seconds</label>
+                            <input id="timerSec" type="number" min="0" max="59" placeholder="0" class="number-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="timerDisplay" class="timer-display">00:00</div>
+
+                <div class="button-group">
+                    <button id="timerStart" class="btn btn-success">
+                        <i class="fas fa-play"></i>
+                        Start
+                    </button>
+                    <button id="timerPause" class="btn btn-warning">
+                        <i class="fas fa-pause"></i>
+                        Pause
+                    </button>
+                    <button id="timerReset" class="btn btn-danger">
+                        <i class="fas fa-stop"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="row">
-          <button id="timerReset" class="err">Reset</button>
+
+        <!-- Stopwatch View (Landscape Left) -->
+        <div id="stopwatch" class="view">
+            <div class="tool-container">
+                <div class="tool-header">
+                    <i class="fas fa-stopwatch"></i>
+                    <h2>Stopwatch</h2>
+                    <span class="orientation-hint">Landscape Left</span>
+                </div>
+
+                <div id="swDisplay" class="stopwatch-display">00:00.000</div>
+
+                <div class="button-group">
+                    <button id="swStart" class="btn btn-success">
+                        <i class="fas fa-play"></i>
+                        Start
+                    </button>
+                    <button id="swLap" class="btn btn-info">
+                        <i class="fas fa-flag"></i>
+                        Lap
+                    </button>
+                    <button id="swStop" class="btn btn-danger">
+                        <i class="fas fa-stop"></i>
+                        Stop
+                    </button>
+                    <button id="swReset" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i>
+                        Reset
+                    </button>
+                </div>
+
+                <div class="laps-container">
+                    <h4><i class="fas fa-list"></i> Lap Times</h4>
+                    <div id="laps" class="laps-list">No laps recorded</div>
+                </div>
+            </div>
         </div>
-        <div class="hint">Hold phone upside down to use Timer.</div>
-      </div>
-    </div>
 
-    <div id="stopwatch" class="view">
-      <div class="spacer"></div>
-      <div class="panel">
-        <h2 class="title">Stopwatch</h2>
-        <div class="big" id="swDisplay">00:00.000</div>
-        <div class="row">
-          <button id="swStart" class="ok">Start</button>
-          <button id="swLap" class="warn">Lap</button>
+        <!-- Weather View (Landscape Right) -->
+        <div id="weather" class="view">
+            <div class="tool-container">
+                <div class="tool-header">
+                    <i class="fas fa-cloud-sun"></i>
+                    <h2>Weather Today</h2>
+                    <span class="orientation-hint">Landscape Right</span>
+                </div>
+
+                <div class="weather-controls">
+                    <div class="location-options">
+                        <div class="input-group">
+                            <label for="city">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Enter Location
+                            </label>
+                            <input id="city" type="text" placeholder="Delhi" class="location-input">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="pincode">
+                                <i class="fas fa-mail-bulk"></i>
+                                Or Enter Pincode
+                            </label>
+                            <input id="pincode" type="text" placeholder="110001" class="location-input">
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="getWeather" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                            Get Weather
+                        </button>
+                        <button id="useGPS" class="btn btn-info">
+                            <i class="fas fa-location-arrow"></i>
+                            Use GPS
+                        </button>
+                    </div>
+                </div>
+
+                <div class="weather-display">
+                    <div class="weather-main">
+                        <div id="wxTemp" class="temperature">--°C</div>
+                        <div id="wxDesc" class="weather-desc">Loading Delhi weather...</div>
+                    </div>
+                    <div id="wxMeta" class="weather-meta"></div>
+                    <div class="weather-icon">
+                        <i id="weatherIcon" class="fas fa-sun"></i>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row">
-          <button id="swStop" class="err">Stop</button>
-          <button id="swReset">Reset</button>
-        </div>
-        <div id="laps" class="hint">No laps</div>
-        <div class="hint">Landscape left to use Stopwatch.</div>
-      </div>
-    </div>
+    </main>
 
-    <div id="weather" class="view">
-      <div class="spacer"></div>
-      <div class="panel">
-        <h2 class="title">Weather of the Day</h2>
-        <div class="row">
-          <input id="city" placeholder="City (optional)">
-        </div>
-        <div class="row">
-          <button id="getWeather" class="primary">Fetch Weather</button>
-          <button id="useGPS">Use GPS</button>
-        </div>
-        <div class="big" id="wxTemp">--°C</div>
-        <div class="center" id="wxDesc">No data</div>
-        <div class="hint" id="wxMeta"></div>
-        <div class="hint">Landscape right to view Weather.</div>
-      </div>
-    </div>
-  </main>
+    <footer class="footer">
+        <p>Developed by <a href="https://www.techgig.com/pub/sanjaychoudhary7" target="_blank">Sanjay Choudhary</a></p>
+        <p>Rotate your device to access different tools</p>
+    </footer>
 
-<script>
-  const modeEl = document.getElementById('mode');
-  const statusEl = document.getElementById('status');
-  const anglesEl = document.getElementById('angles');
-  const gate = document.getElementById('gate');
-  const enableBtn = document.getElementById('enableMotion');
-
-  const views = {
-    upright: document.getElementById('alarm'),
-    upside: document.getElementById('timer'),
-    landLeft: document.getElementById('stopwatch'),
-    landRight: document.getElementById('weather')
-  };
-
-  function showView(key) {
-    Object.values(views).forEach(v => v.classList.remove('active'));
-    views[key].classList.add('active');
-  }
-
-  function labelFor(key) {
-    if (key === 'upright') return 'Portrait upright · Alarm';
-    if (key === 'upside') return 'Portrait upside down · Timer';
-    if (key === 'landLeft') return 'Landscape left · Stopwatch';
-    if (key === 'landRight') return 'Landscape right · Weather';
-    return 'Detecting…';
-  }
-
-  function layoutFrom(beta, gamma) {
-    if (beta > 45 && beta < 135) return 'upright';
-    if (beta < -45 && beta > -135) return 'upside';
-    if (gamma < -45) return 'landLeft';
-    if (gamma > 45) return 'landRight';
-    return 'upright';
-  }
-
-  function updateModeFromAngles(a, b, g) {
-    const key = layoutFrom(b, g);
-    modeEl.textContent = labelFor(key);
-    showView(key);
-    anglesEl.textContent = `α ${Math.round(a||0)}° · β ${Math.round(b||0)}° · γ ${Math.round(g||0)}°`;
-    statusEl.textContent = 'Live motion';
-  }
-
-  function fallbackFromScreenOrientation() {
-    let t = '';
-    if (screen.orientation && screen.orientation.type) t = screen.orientation.type;
-    if (t.includes('portrait')) updateModeFromAngles(0, 90, 0);
-    else if (t.includes('landscape')) updateModeFromAngles(0, 0, 90);
-  }
-
-  function startMotion() {
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', e => {
-        updateModeFromAngles(e.alpha, e.beta, e.gamma);
-      }, true);
-      statusEl.textContent = 'Listening…';
-    } else {
-      statusEl.textContent = 'Motion not supported';
-      fallbackFromScreenOrientation();
-    }
-  }
-
-  function setupIOSGate() {
-    const needsGate = typeof DeviceOrientationEvent !== 'undefined'
-      && typeof DeviceOrientationEvent.requestPermission === 'function';
-    if (needsGate) {
-      gate.style.display = 'block';
-      enableBtn.onclick = async () => {
-        try {
-          const r = await DeviceOrientationEvent.requestPermission();
-          if (r === 'granted') { gate.style.display = 'none'; startMotion(); }
-        } catch {}
-      };
-    } else {
-      startMotion();
-    }
-  }
-
-  if (screen.orientation) screen.orientation.addEventListener('change', fallbackFromScreenOrientation);
-  window.addEventListener('orientationchange', fallbackFromScreenOrientation);
-  setupIOSGate();
-
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  let audioCtx;
-  function beep(ms=1200, freq=880) {
-    if (!audioCtx) audioCtx = new AudioCtx();
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.connect(g); g.connect(audioCtx.destination);
-    o.frequency.value = freq; o.start();
-    g.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.4, audioCtx.currentTime+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+ms/1000);
-    o.stop(audioCtx.currentTime+ms/1000);
-  }
-
-  const clockNow = document.getElementById('clockNow');
-  const alarmTime = document.getElementById('alarmTime');
-  const setAlarmBtn = document.getElementById('setAlarm');
-  const clearAlarmBtn = document.getElementById('clearAlarm');
-  const testBeepBtn = document.getElementById('testBeep');
-  const alarmHint = document.getElementById('alarmHint');
-  let alarmAt = null;
-  setInterval(() => {
-    const d = new Date();
-    const hh = String(d.getHours()).padStart(2,'0');
-    const mm = String(d.getMinutes()).padStart(2,'0');
-    const ss = String(d.getSeconds()).padStart(2,'0');
-    clockNow.textContent = `${hh}:${mm}:${ss}`;
-    if (alarmAt && d >= alarmAt) {
-      alarmHint.textContent = 'Alarm ringing';
-      beep(1500, 1000);
-      alarmAt = null;
-    }
-  }, 250);
-  setAlarmBtn.onclick = () => {
-    const v = alarmTime.value;
-    if (!v) { alarmHint.textContent = 'Set a time'; return; }
-    const [h, m] = v.split(':').map(n => parseInt(n,10));
-    const now = new Date();
-    const target = new Date();
-    target.setHours(h, m, 0, 0);
-    if (target <= now) target.setDate(target.getDate()+1);
-    alarmAt = target;
-    const when = target.toTimeString().slice(0,5);
-    alarmHint.textContent = `Alarm set for ${when}`;
-  };
-  clearAlarmBtn.onclick = () => { alarmAt = null; alarmHint.textContent = 'No alarm set'; };
-  testBeepBtn.onclick = () => beep();
-
-  const tMin = document.getElementById('timerMin');
-  const tSec = document.getElementById('timerSec');
-  const tDisp = document.getElementById('timerDisplay');
-  const tStart = document.getElementById('timerStart');
-  const tPause = document.getElementById('timerPause');
-  const tReset = document.getElementById('timerReset');
-  let tRemainMs = 0, tTicker = null, tPaused = false, tEnd = 0;
-  function fmtMMSS(ms) {
-    const total = Math.max(0, Math.ceil(ms/1000));
-    const m = Math.floor(total/60);
-    const s = total%60;
-    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  }
-  function updateTimerUI() { tDisp.textContent = fmtMMSS(tRemainMs); }
-  function tickTimer() {
-    const now = performance.now();
-    tRemainMs = Math.max(0, tEnd - now);
-    updateTimerUI();
-    if (tRemainMs <= 0) { stopTimer(); beep(1800, 900); }
-  }
-  function startTimer() {
-    if (tTicker) return;
-    if (tRemainMs <= 0) {
-      const mins = parseInt(tMin.value||'0',10);
-      const secs = parseInt(tSec.value||'0',10);
-      tRemainMs = (Math.max(0, mins)*60 + Math.max(0, Math.min(59, secs))) * 1000;
-    }
-    if (tRemainMs <= 0) return;
-    tEnd = performance.now() + tRemainMs;
-    tTicker = setInterval(tickTimer, 100);
-    tPaused = false;
-  }
-  function pauseTimer() {
-    if (!tTicker) return;
-    clearInterval(tTicker); tTicker = null;
-    tPaused = true;
-  }
-  function stopTimer() {
-    clearInterval(tTicker); tTicker = null;
-    tPaused = false; tRemainMs = 0; updateTimerUI();
-  }
-  tStart.onclick = startTimer;
-  tPause.onclick = () => { if (tPaused) startTimer(); else pauseTimer(); };
-  tReset.onclick = stopTimer;
-
-  const swDisplay = document.getElementById('swDisplay');
-  const swStart = document.getElementById('swStart');
-  const swStop = document.getElementById('swStop');
-  const swReset = document.getElementById('swReset');
-  const swLap = document.getElementById('swLap');
-  const laps = document.getElementById('laps');
-  let swRunning=false, swBase=0, swElapsed=0, swRAF=0, lapList=[];
-  function fmtSW(ms) {
-    const t = Math.floor(ms);
-    const m = Math.floor(t/60000);
-    const s = Math.floor((t%60000)/1000);
-    const ms3 = String(t%1000).padStart(3,'0');
-    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${ms3}`;
-  }
-  function swStep(ts) {
-    if (!swRunning) return;
-    const now = performance.now();
-    swElapsed = now - swBase;
-    swDisplay.textContent = fmtSW(swElapsed);
-    swRAF = requestAnimationFrame(swStep);
-  }
-  swStart.onclick = () => {
-    if (swRunning) return;
-    swRunning = true;
-    swBase = performance.now() - swElapsed;
-    swRAF = requestAnimationFrame(swStep);
-  };
-  swStop.onclick = () => {
-    if (!swRunning) return;
-    swRunning = false;
-    cancelAnimationFrame(swRAF);
-  };
-  swReset.onclick = () => {
-    swRunning = false; cancelAnimationFrame(swRAF);
-    swElapsed = 0; swDisplay.textContent = fmtSW(0); lapList=[]; laps.textContent='No laps';
-  };
-  swLap.onclick = () => {
-    if (!swRunning) return;
-    lapList.push(swElapsed);
-    const lines = lapList.slice(-5).map((v,i)=>`Lap ${lapList.length- (lapList.slice(-5).length -1 - i)}: ${fmtSW(v)}`);
-    laps.textContent = lines.join(' · ');
-  };
-
-  const wxTemp = document.getElementById('wxTemp');
-  const wxDesc = document.getElementById('wxDesc');
-  const wxMeta = document.getElementById('wxMeta');
-  const getWeather = document.getElementById('getWeather');
-  const useGPS = document.getElementById('useGPS');
-  const city = document.getElementById('city');
-
-  function codeToText(c) {
-    const map = {
-      0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
-      45:'Fog',48:'Depositing rime fog',
-      51:'Drizzle light',53:'Drizzle moderate',55:'Drizzle dense',
-      56:'Freezing drizzle light',57:'Freezing drizzle dense',
-      61:'Rain slight',63:'Rain moderate',65:'Rain heavy',
-      66:'Freezing rain light',67:'Freezing rain heavy',
-      71:'Snow fall slight',73:'Snow fall moderate',75:'Snow fall heavy',
-      77:'Snow grains',80:'Rain showers slight',81:'Rain showers moderate',82:'Rain showers violent',
-      85:'Snow showers slight',86:'Snow showers heavy',
-      95:'Thunderstorm',96:'Thunderstorm hail slight',99:'Thunderstorm hail heavy'
-    };
-    return map[c] || 'Unknown';
-  }
-
-  async function fetchWeather(lat, lon, place='') {
-    wxDesc.textContent = 'Loading…';
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`;
-    const res = await fetch(url);
-    if (!res.ok) { wxDesc.textContent='Failed to load'; return; }
-    const j = await res.json();
-    const t = Math.round(j.current.temperature_2m);
-    const code = j.current.weather_code;
-    const dmax = Math.round(j.daily.temperature_2m_max[0]);
-    const dmin = Math.round(j.daily.temperature_2m_min[0]);
-    wxTemp.textContent = `${t}°C`;
-    wxDesc.textContent = `${codeToText(code)}`;
-    wxMeta.textContent = `${place ? place+' · ' : ''}High ${dmax}°C · Low ${dmin}°C`;
-  }
-
-  async function geocodeCity(name) {
-    const u = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1`;
-    const r = await fetch(u);
-    if (!r.ok) return null;
-    const j = await r.json();
-    if (!j.results || !j.results.length) return null;
-    const g = j.results[0];
-    return { lat: g.latitude, lon: g.longitude, label: `${g.name}${g.country ? ', '+g.country : ''}` };
-  }
-
-  getWeather.onclick = async () => {
-    const q = city.value.trim();
-    if (q.length) {
-      const g = await geocodeCity(q);
-      if (g) fetchWeather(g.lat, g.lon, g.label);
-      else { wxDesc.textContent='City not found'; wxMeta.textContent=''; }
-    } else if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        p => fetchWeather(p.coords.latitude, p.coords.longitude, 'Your location'),
-        () => { wxDesc.textContent='Location denied'; wxMeta.textContent='Enter a city to fetch weather.'; },
-        { enableHighAccuracy:true, timeout:7000, maximumAge:0 }
-      );
-    } else {
-      wxDesc.textContent='No geolocation support'; wxMeta.textContent='Enter a city to fetch weather.';
-    }
-  };
-
-  useGPS.onclick = () => {
-    if (!navigator.geolocation) { wxDesc.textContent='No geolocation support'; return; }
-    navigator.geolocation.getCurrentPosition(
-      p => fetchWeather(p.coords.latitude, p.coords.longitude, 'Your location'),
-      () => { wxDesc.textContent='Location denied'; wxMeta.textContent='Enter a city to fetch weather.'; },
-      { enableHighAccuracy:true, timeout:7000, maximumAge:0 }
-    );
-  };
-</script>
+    <script src="script.js"></script>
 </body>
 </html>
