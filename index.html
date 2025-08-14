@@ -5,23 +5,36 @@
 <style>
 body {
   margin: 0;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   font-family: Arial, sans-serif;
-  font-size: 2rem;
+  font-size: 1.5rem;
+  transition: background 0.2s;
   color: white;
-}
-@media (orientation: portrait) {
-  body { background: #c0392b; }
-}
-@media (orientation: landscape) {
-  body { background: #8e44ad; }
 }
 </style>
 </head>
 <body>
-Orientation Test
+<div id="output">Move your phone...</div>
+<script>
+const out = document.getElementById('output');
+function handleOrientation(event) {
+  const alpha = Math.round(event.alpha);
+  const beta = Math.round(event.beta);
+  const gamma = Math.round(event.gamma);
+  out.textContent = `Alpha: ${alpha}° Beta: ${beta}° Gamma: ${gamma}°`;
+  const r = Math.abs(alpha) % 255;
+  const g = Math.abs(beta) % 255;
+  const b = Math.abs(gamma) % 255;
+  document.body.style.background = `rgb(${r},${g},${b})`;
+}
+if (window.DeviceOrientationEvent) {
+  window.addEventListener('deviceorientation', handleOrientation);
+} else {
+  out.textContent = 'DeviceOrientation not supported';
+}
+</script>
 </body>
 </html>
