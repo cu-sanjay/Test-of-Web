@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Screen Orientation Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background: #2c3e50;
+            color: #fff;
+            padding: 1rem;
+        }
+        main {
+            padding: 2rem;
+        }
+        #output {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 2px solid #2c3e50;
+            display: inline-block;
+            background: #ecf0f1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Screen Orientation</h1>
+    </header>
+    <main>
+        <div id="output"></div>
+    </main>    
+
+    <script>
+        const out = document.getElementById('output');
+
+        function getOrientation() {
+            let orientationType =
+                screen.msOrientation ||
+                (screen.orientation || screen.mozOrientation || {}).type;
+
+            switch (orientationType) {
+                case 'portrait-primary':
+                case 'portrait-secondary':
+                    document.body.style.background = '#f39c12';
+                    break;
+                case 'landscape-primary':
+                    document.body.style.background = '#27ae60';
+                    break;
+                case 'landscape-secondary':
+                    document.body.style.background = '#2980b9';
+                    break;
+                default:
+                    document.body.style.background = '#7f8c8d';
+            }
+            return orientationType || 'Not supported';
+        }
+
+        function updateOrientation() {
+            const orn = getOrientation();
+            out.textContent = `Current Orientation: ${orn}`;
+        }
+
+        window.addEventListener('orientationchange', updateOrientation);
+        window.addEventListener('resize', updateOrientation); // devices without orientationchange
+
+        updateOrientation();
+    </script>
+</body>
+</html>
