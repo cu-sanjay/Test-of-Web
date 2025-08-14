@@ -1,81 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Screen Orientation Test</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            transition: background 0.3s;
-        }
-        header {
-            background: #2c3e50;
-            color: #fff;
-            padding: 1rem;
-        }
-        main {
-            padding: 2rem;
-        }
-        #output {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-top: 2rem;
-            padding: 1rem;
-            border: 2px solid #2c3e50;
-            display: inline-block;
-            background: #ecf0f1;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4-Way Orientation Detector</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; text-align: center; }
+    .layout {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      color: white;
+    }
+    .portrait-primary { background: #27ae60; }
+    .portrait-secondary { background: #c0392b; }
+    .landscape-primary { background: #2980b9; }
+    .landscape-secondary { background: #8e44ad; }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Screen Orientation</h1>
-    </header>
-    <main>
-        <div id="output"></div>
-    </main>    
+  <div id="app" class="layout">Detecting...</div>
 
-    <script>
-        const out = document.getElementById('output');
+  <script>
+    const app = document.getElementById("app");
 
-        function updateOrientation() {
-            let orientationType = '';
+    function detectOrientation() {
+      let type = "";
 
-            if (screen.orientation && screen.orientation.type) {
-                orientationType = screen.orientation.type;
-            } else if (window.matchMedia("(orientation: portrait)").matches) {
-                orientationType = 'portrait';
-            } else if (window.matchMedia("(orientation: landscape)").matches) {
-                orientationType = 'landscape';
-            } else {
-                orientationType = 'Not supported';
-            }
-
-            switch (true) {
-                case orientationType.includes('portrait'):
-                    document.body.style.background = '#f39c12';
-                    break;
-                case orientationType.includes('landscape'):
-                    document.body.style.background = '#27ae60';
-                    break;
-                default:
-                    document.body.style.background = '#7f8c8d';
-            }
-
-            out.textContent = `Current Orientation: ${orientationType}`;
+      // Modern browsers
+      if (screen.orientation && screen.orientation.type) {
+        type = screen.orientation.type;
+      }
+      // iOS Safari fallback
+      else if (typeof window.orientation !== "undefined") {
+        switch (window.orientation) {
+          case 0: type = "portrait-primary"; break;
+          case 180: type = "portrait-secondary"; break;
+          case 90: type = "landscape-primary"; break;
+          case -90: type = "landscape-secondary"; break;
+          default: type = "unknown";
         }
+      } else {
+        type = "unknown";
+      }
 
-        if (screen.orientation) {
-            screen.orientation.addEventListener('change', updateOrientation);
-        }
-        window.addEventListener('orientationchange', updateOrientation);
-        window.addEventListener('resize', updateOrientation);
+      // Apply layout
+      app.className = `layout ${type}`;
+      app.textContent = `Orientation: ${type}`;
+    }
 
-        updateOrientation();
-    </script>
+    // Listeners
+    if (screen.orientation) {
+      screen.orientation.addEventListener("change", detectOrientation);
+    }
+    window.addEventListener("orientationchange", detectOrientation);
+    window.addEventListener("resize", detectOrientation);
+
+    // Initial run
+    detectOrientation();
+  </script>
 </body>
 </html>
