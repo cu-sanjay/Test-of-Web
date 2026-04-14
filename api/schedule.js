@@ -1,11 +1,10 @@
 import * as cheerio from 'cheerio';
 
 export default async function handler(req, res) {
-  // CORS Headers to allow any web app to fetch freely
+  // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -13,22 +12,39 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Masking the fetch to bypass basic bot-blocking measures
-    const response = await fetch('https://sports.ndtv.com/ipl-2026/schedules-fixtures', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5'
-      }
-    });
+    const targetUrl = 'https://sports.ndtv.com/ipl-2026/schedules-fixtures';
 
-    if (!response.ok) throw new Error(`Source returned status: ${response.status}`);
-    
-    const html = await response.text();
+    const headers = {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": '"Windows"',
+      "Sec-Fetch-Dest": "document",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "none"
+    };
+
+    let html = '';
+    let response = await fetch(targetUrl, { headers });
+
+    // Proxy Fallback for 403s
+    if (!response.ok) {
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+      const proxyResponse = await fetch(proxyUrl);
+      
+      if (!proxyResponse.ok) throw new Error(`Proxy failed with status: ${proxyResponse.status}`);
+      
+      const proxyData = await proxyResponse.json();
+      html = proxyData.contents;
+    } else {
+      html = await response.text();
+    }
+
     const $ = cheerio.load(html);
     const matches = [];
 
-    // Parse the HTML DOM directly mapping to the structure found on the page
     $('.sp-scr_wrp').each((i, el) => {
       try {
         const teamA = $(el).attr('data-teama');
@@ -36,11 +52,9 @@ export default async function handler(req, res) {
         const venue = $(el).attr('data-venue');
         const dateId = $(el).attr('id'); 
         
-        // Handling dynamic status/results logic
         const status = $(el).find('.scr_inf-wrp .scr_dt-red').first().text().trim() || 'Upcoming';
         const result = $(el).find('.scr_inf-wrp .scr_dt-red').last().text().trim() || null;
         
-        // Extract scores if match has started/ended
         const teamsInfo = $(el).find('.scr_tm-wrp');
         const scoreA = $(teamsInfo[0]).find('.scr_tm-scr').text().trim() || null;
         const scoreB = $(teamsInfo[1]).find('.scr_tm-scr').text().trim() || null;
@@ -59,7 +73,7 @@ export default async function handler(req, res) {
           }
         });
       } catch (err) {
-        // Skip malformed nodes smoothly to avoid crashing the endpoint
+        // Skip malformed nodes gracefully
       }
     });
 
