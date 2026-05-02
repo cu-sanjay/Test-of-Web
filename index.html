@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>README Forge — Dynamic Badges for GitHub</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --ink:#1a1a1a;
+    --paper:#f4f1ea;
+    --paper-2:#eae5d9;
+    --rule:#1a1a1a;
+    --accent:#c8402c;
+    --accent-2:#2c5f4f;
+    --muted:#6b6357;
+  }
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(26,26,26,0.08) 1px, transparent 0);
+    background-size:24px 24px;
+  }
+  .font-serif{font-family:'Fraunces',serif;font-optical-sizing:auto;}
+  .font-mono{font-family:'JetBrains Mono',monospace;}
+  .rule{border-color:var(--rule);}
+  .thick-rule{border-width:2px;border-color:var(--rule);}
+  .ink-shadow{box-shadow:4px 4px 0 var(--ink);}
+  .ink-shadow-sm{box-shadow:2px 2px 0 var(--ink);}
+  .ink-shadow-lg{box-shadow:6px 6px 0 var(--ink);}
+  .btn-ink{
+    background:var(--ink);color:var(--paper);
+    border:2px solid var(--ink);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn-ink:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);}
+  .btn-ink:active{transform:translate(0,0);box-shadow:none;}
+  .btn-paper{
+    background:var(--paper);color:var(--ink);
+    border:2px solid var(--ink);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn-paper:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);}
+  .btn-paper:active{transform:translate(0,0);box-shadow:none;}
+  .chip{
+    background:var(--paper);
+    border:1.5px solid var(--ink);
+    padding:4px 10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .chip-active{background:var(--ink);color:var(--paper);}
+  .tab-btn{
+    padding:10px 16px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.08em;
+    border:2px solid var(--ink);
+    background:var(--paper);
+    cursor:pointer;
+    transition:all .12s ease;
+  }
+  .tab-btn:hover{background:var(--paper-2);}
+  .tab-btn-active{background:var(--ink);color:var(--paper);}
+  .input-field{
+    background:var(--paper);
+    border:2px solid var(--ink);
+    padding:8px 12px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    width:100%;
+    color:var(--ink);
+  }
+  .input-field:focus{outline:none;box-shadow:2px 2px 0 var(--ink);}
+  select.input-field{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+  .label-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.12em;
+    color:var(--muted);
+    margin-bottom:6px;display:block;
+  }
+  .preview-stage{
+    background:
+      linear-gradient(#1a1a1a,#1a1a1a) left top/20px 2px no-repeat,
+      linear-gradient(#1a1a1a,#1a1a1a) left top/2px 20px no-repeat,
+      linear-gradient(#1a1a1a,#1a1a1a) right top/20px 2px no-repeat,
+      linear-gradient(#1a1a1a,#1a1a1a) right top/2px 20px no-repeat,
+      linear-gradient(#1a1a1a,#1a1a1a) left bottom/20px 2px no-repeat,
+      linear-gradient(#1a1a1a,#1a1a1a) left bottom/2px 20px no-repeat,
+      linear-gradient(#1a1a1a,#1a1a1a) right bottom/20px 2px no-repeat,
+      linear-gradient(#1a1a1a,#1a1a1a) right bottom/2px 20px no-repeat,
+      #eae5d9;
+  }
+  .marquee-wrap{overflow:hidden;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);background:var(--ink);color:var(--paper);}
+  .marquee{display:flex;gap:48px;white-space:nowrap;animation:marquee 40s linear infinite;padding:8px 0;}
+  @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .star{display:inline-block;transform:rotate(0deg);}
+  .code-block{
+    background:var(--ink);
+    color:#f4f1ea;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    padding:14px 16px;
+    border:2px solid var(--ink);
+    overflow-x:auto;
+    white-space:pre-wrap;word-break:break-all;
+    line-height:1.6;
+  }
+  .code-block .tag{color:#d4a574;}
+  .code-block .attr{color:#9cc4b2;}
+  .code-block .str{color:#e89b7a;}
+  .grid-dots{
+    background-image:radial-gradient(circle, var(--ink) 1px, transparent 1px);
+    background-size:16px 16px;
+  }
+  details summary{list-style:none;cursor:pointer;}
+  details summary::-webkit-details-marker{display:none;}
+  .num-stamp{
+    width:32px;height:32px;
+    border:2px solid var(--ink);
+    background:var(--paper);
+    display:inline-flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-weight:700;
+    font-size:16px;
+  }
+  .swatch{
+    width:28px;height:28px;
+    border:2px solid var(--ink);
+    cursor:pointer;
+    transition:transform .12s ease;
+  }
+  .swatch:hover{transform:scale(1.1);}
+  .swatch-active{box-shadow:0 0 0 2px var(--paper), 0 0 0 4px var(--ink);}
+  .preview-card{
+    background:#fff;border:2px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);
+  }
+  .scroll-y{overflow-y:auto;}
+  .scroll-y::-webkit-scrollbar{width:10px;}
+  .scroll-y::-webkit-scrollbar-track{background:var(--paper-2);}
+  .scroll-y::-webkit-scrollbar-thumb{background:var(--ink);border:2px solid var(--paper-2);}
+
+  /* Badge Style Themes for live preview */
+  .theme-classic{background:#1a1a1a;color:#f4f1ea;}
+  .theme-paper{background:#f4f1ea;color:#1a1a1a;border:1px solid #1a1a1a;}
+  .theme-terminal{background:#0d1117;color:#7ee787;font-family:'JetBrains Mono',monospace;}
+  .theme-retro{background:#fbbf24;color:#1a1a1a;border:2px solid #1a1a1a;}
+  .theme-ocean{background:#0c4a6e;color:#e0f2fe;}
+  .theme-crimson{background:#7f1d1d;color:#fef2f2;}
+  .theme-forest{background:#14532d;color:#ecfccb;}
+  .theme-ink{background:#f4f1ea;color:#1a1a1a;border:2px solid #1a1a1a;box-shadow:3px 3px 0 #1a1a1a;}
+
+  .blink{animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+    background:var(--ink);color:var(--paper);
+    padding:12px 24px;border:2px solid var(--ink);
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.08em;
+    box-shadow:4px 4px 0 var(--accent);
+    transition:transform .3s ease;z-index:100;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  .rotate-tag{
+    transform:rotate(-2deg);
+    display:inline-block;
+  }
+  .hatch{
+    background-image:repeating-linear-gradient(45deg,var(--ink) 0,var(--ink) 1px,transparent 1px,transparent 6px);
+  }
+  .section-head{
+    border-top:2px solid var(--ink);
+    border-bottom:2px solid var(--ink);
+    padding:6px 0;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .quote-card{
+    background:var(--paper);
+    border:2px solid var(--ink);
+    padding:20px;
+    position:relative;
+  }
+  .quote-mark{
+    position:absolute;top:-12px;left:12px;
+    background:var(--paper);padding:0 8px;
+    font-family:'Fraunces',serif;font-size:48px;line-height:1;font-weight:900;
+  }
+  @media (max-width:1024px){
+    .main-grid{grid-template-columns:1fr !important;}
+  }
+</style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div class="h-full w-full scroll-y">
+   <!-- TOP MARQUEE -->
+   <div class="marquee-wrap">
+    <div class="marquee font-mono text-xs font-semibold uppercase tracking-widest">
+     <span>★ Stylish Readme</span><span>✦ Live widgets</span><span>◆ Time badges</span><span>✧ Daily quotes</span><span>◇ Profile cards</span><span>★ 190+ countries</span><span>✦ Copy and paste</span> <span>★ Stylish Readme</span><span>✦ Live widgets</span><span>◆ Time badges</span><span>✧ Daily quotes</span><span>◇ Profile cards</span><span>★ 190+ countries</span><span>✦ Copy and paste</span>
+    </div>
+   </div><!-- MASTHEAD -->
+   <header class="max-w-[1400px] mx-auto px-6 pt-8 pb-4">
+    <div class="flex items-center justify-between flex-wrap gap-4">
+     <div class="flex items-center gap-4">
+      <div class="w-14 h-14 border-2 border-black flex items-center justify-center ink-shadow-sm bg-white">
+       <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16v16H4z" /><path d="M4 10h16M10 4v16" /><circle cx="15" cy="15" r="2" fill="currentColor" />
+       </svg>
+      </div>
+      <div>
+       <div class="font-mono text-[10px] uppercase tracking-[0.25em] text-neutral-600">
+        Beautiful embeds for your README
+       </div>
+       <h1 class="font-serif font-black text-4xl md:text-5xl leading-none tracking-tight">Stylish Readme</h1>
+      </div>
+     </div>
+     <div class="flex items-center gap-2 font-mono text-xs uppercase tracking-wider">
+      <span class="chip"><span class="w-2 h-2 bg-green-600 inline-block"></span>Live</span> <span class="chip" id="nowChip">—</span>
+     </div>
+    </div>
+    <div class="mt-6 border-t-2 border-black border-b-2 py-3 flex items-center justify-between flex-wrap gap-2 font-mono text-[11px] uppercase tracking-widest">
+     <span>Create and embed dynamic widgets</span> <span class="hidden md:inline">Copy, paste, done</span> <span>No signup needed</span>
+    </div>
+   </header><!-- HERO -->
+   <section class="max-w-[1400px] mx-auto px-6 py-6">
+    <div class="grid grid-cols-12 gap-6">
+     <div class="col-span-12 lg:col-span-8">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600 mb-3">Make it yours</p>
+      <h2 class="font-serif font-black text-5xl md:text-7xl leading-[0.95] tracking-tight">Your README,<br><span class="italic font-normal">truly alive</span></h2>
+      <p class="mt-5 text-base md:text-lg max-w-2xl leading-relaxed">Create live widgets for your GitHub profile. Real-time clocks, daily quotes, profile badges, timezone banners. Each one is an SVG that updates whenever someone views your README.</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+       <button onclick="scrollToId('workshop')" class="btn-ink px-5 py-3 font-mono text-xs uppercase tracking-widest font-semibold">Start creating</button> <button onclick="scrollToId('gallery')" class="btn-paper px-5 py-3 font-mono text-xs uppercase tracking-widest font-semibold">See examples</button>
+      </div>
+     </div>
+     <div class="col-span-12 lg:col-span-4">
+      <div class="border-2 border-black p-5 bg-white ink-shadow">
+       <div class="section-head mb-4">
+        <span class="font-mono text-[10px] font-bold uppercase tracking-widest">What you get</span> <span class="font-mono text-[10px]">Fig. A</span>
+       </div>
+       <div class="grid grid-cols-2 gap-3 text-center">
+        <div class="border-2 border-black p-3">
+         <div class="font-serif font-black text-3xl" id="statCount">
+          8
+         </div>
+         <div class="font-mono text-[10px] uppercase tracking-wider mt-1">
+          Widget Types
+         </div>
+        </div>
+        <div class="border-2 border-black p-3 bg-black text-[var(--paper)]">
+         <div class="font-serif font-black text-3xl">
+          8
+         </div>
+         <div class="font-mono text-[10px] uppercase tracking-wider mt-1">
+          Themes
+         </div>
+        </div>
+        <div class="border-2 border-black p-3 bg-[var(--paper)]">
+         <div class="font-serif font-black text-3xl">
+          400+
+         </div>
+         <div class="font-mono text-[10px] uppercase tracking-wider mt-1">
+          Timezones
+         </div>
+        </div>
+        <div class="border-2 border-black p-3">
+         <div class="font-serif font-black text-3xl">
+          Live
+         </div>
+         <div class="font-mono text-[10px] uppercase tracking-wider mt-1">
+          Always Fresh
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- WORKSHOP -->
+   <section id="workshop" class="max-w-[1400px] mx-auto px-6 py-8">
+    <div class="section-head mb-6">
+     <div class="flex items-center gap-3">
+      <span class="num-stamp">01</span>
+      <h3 class="font-serif font-black text-2xl md:text-3xl">Create your widget</h3>
+     </div><span class="font-mono text-[10px] uppercase tracking-widest hidden md:inline">Pick one, customize it, copy the code</span>
+    </div><!-- Widget Type Tabs -->
+    <div class="flex flex-wrap gap-2 mb-6" id="widgetTabs">
+     <!-- populated by JS -->
+    </div><!-- Main Grid: Controls + Preview -->
+    <div class="main-grid grid grid-cols-[420px_1fr] gap-6">
+     <!-- CONTROLS -->
+     <div class="border-2 border-black bg-[var(--paper)] ink-shadow-lg">
+      <div class="p-4 border-b-2 border-black bg-black text-[var(--paper)] flex items-center justify-between">
+       <span class="font-mono text-xs uppercase tracking-widest font-bold">Control Panel</span> <span class="font-mono text-[10px]" id="panelLabel">TIME BADGE</span>
+      </div>
+      <div id="controlsArea" class="p-5 scroll-y" style="max-height:640px;"></div>
+     </div><!-- PREVIEW + EMBED -->
+     <div class="flex flex-col gap-4">
+      <div class="border-2 border-black bg-white ink-shadow-lg">
+       <div class="p-4 border-b-2 border-black flex items-center justify-between bg-[var(--paper)]">
+        <span class="font-mono text-xs uppercase tracking-widest font-bold">Live Preview</span>
+        <div class="flex items-center gap-2">
+         <span class="chip"><i data-lucide="eye" class="w-3 h-3"></i>Rendering</span>
+        </div>
+       </div>
+       <div class="preview-stage p-10 min-h-[260px] flex items-center justify-center" id="previewStage">
+        <!-- live preview -->
+       </div>
+       <div class="px-5 py-3 border-t-2 border-black bg-[var(--paper-2)] flex items-center justify-between flex-wrap gap-2">
+        <span class="font-mono text-[10px] uppercase tracking-widest">Renders as SVG · ~<span id="sizeInfo">2.1</span>kb</span> <span class="font-mono text-[10px] uppercase tracking-widest">Updates every refresh</span>
+       </div>
+      </div>
+      <div class="border-2 border-black ink-shadow-lg">
+       <div class="p-4 border-b-2 border-black flex items-center justify-between bg-black text-[var(--paper)]">
+        <span class="font-mono text-xs uppercase tracking-widest font-bold">Embed Code</span>
+        <div class="flex gap-2">
+         <button onclick="switchFormat('md')" id="fmtMd" class="tab-btn tab-btn-active" style="padding:4px 10px;font-size:10px;">Markdown</button> <button onclick="switchFormat('html')" id="fmtHtml" class="tab-btn" style="padding:4px 10px;font-size:10px;">HTML</button> <button onclick="switchFormat('url')" id="fmtUrl" class="tab-btn" style="padding:4px 10px;font-size:10px;">URL</button>
+        </div>
+       </div>
+       <div class="relative">
+        <pre class="code-block" id="embedCode"></pre><button onclick="copyEmbed()" class="absolute top-3 right-3 btn-paper px-3 py-2 font-mono text-[10px] uppercase tracking-widest font-bold flex items-center gap-1.5"> <i data-lucide="copy" class="w-3 h-3"></i><span id="copyLabel">Copy</span> </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- GALLERY -->
+   <section id="gallery" class="max-w-[1400px] mx-auto px-6 py-10">
+    <div class="section-head mb-6">
+     <div class="flex items-center gap-3">
+      <span class="num-stamp">02</span>
+      <h3 class="font-serif font-black text-2xl md:text-3xl">Examples</h3>
+     </div><span class="font-mono text-[10px] uppercase tracking-widest hidden md:inline">Click any one to load and tweak</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="galleryGrid"></div>
+   </section><!-- HOW IT WORKS -->
+   <section class="max-w-[1400px] mx-auto px-6 py-10">
+    <div class="section-head mb-6">
+     <div class="flex items-center gap-3">
+      <span class="num-stamp">03</span>
+      <h3 class="font-serif font-black text-2xl md:text-3xl">How it works</h3>
+     </div><span class="font-mono text-[10px] uppercase tracking-widest hidden md:inline">Three simple steps</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+     <article class="border-2 border-black p-6 bg-white ink-shadow">
+      <div class="flex items-center justify-between mb-4">
+       <span class="num-stamp">I</span> <i data-lucide="sliders-horizontal" class="w-6 h-6"></i>
+      </div>
+      <h4 class="font-serif font-black text-2xl mb-2">Design</h4>
+      <p class="text-sm leading-relaxed">Pick a widget type, a theme, and your timezone. Watch it update in real-time. Every option is reversible.</p>
+     </article>
+     <article class="border-2 border-black p-6 bg-[var(--ink)] text-[var(--paper)] ink-shadow">
+      <div class="flex items-center justify-between mb-4">
+       <span class="num-stamp bg-[var(--paper)]">II</span> <i data-lucide="clipboard-copy" class="w-6 h-6"></i>
+      </div>
+      <h4 class="font-serif font-black text-2xl mb-2">Copy</h4>
+      <p class="text-sm leading-relaxed">Grab the code as Markdown, HTML, or just the URL. Each widget is a live endpoint that renders fresh every time.</p>
+     </article>
+     <article class="border-2 border-black p-6 bg-[var(--paper-2)] ink-shadow">
+      <div class="flex items-center justify-between mb-4">
+       <span class="num-stamp">III</span> <i data-lucide="rocket" class="w-6 h-6"></i>
+      </div>
+      <h4 class="font-serif font-black text-2xl mb-2">Paste</h4>
+      <p class="text-sm leading-relaxed">Drop it into your README, PR description, or GitHub bio. Your profile comes alive. That's it.</p>
+     </article>
+    </div>
+   </section><!-- FAQ -->
+   <section class="max-w-[1400px] mx-auto px-6 py-10">
+    <div class="section-head mb-6">
+     <div class="flex items-center gap-3">
+      <span class="num-stamp">04</span>
+      <h3 class="font-serif font-black text-2xl md:text-3xl">Questions</h3>
+     </div><span class="font-mono text-[10px] uppercase tracking-widest hidden md:inline">Common ones answered</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+     <details class="border-2 border-black bg-white p-5 ink-shadow-sm" open>
+      <summary class="flex items-center justify-between font-serif font-bold text-lg"> <span>Does it really update live?</span> <i data-lucide="plus" class="w-5 h-5"></i> </summary>
+      <p class="mt-3 text-sm leading-relaxed text-neutral-800">Yes. Each widget is an SVG endpoint. When someone views your README, GitHub fetches a fresh render with the current time, date, or content. No client-side scripts needed.</p>
+     </details>
+     <details class="border-2 border-black bg-white p-5 ink-shadow-sm">
+      <summary class="flex items-center justify-between font-serif font-bold text-lg"> <span>What about caching?</span> <i data-lucide="plus" class="w-5 h-5"></i> </summary>
+      <p class="mt-3 text-sm leading-relaxed text-neutral-800">GitHub caches images via their Camo proxy. Our widgets use cache-busting headers, so refreshes happen frequently, usually every minute or two.</p>
+     </details>
+     <details class="border-2 border-black bg-white p-5 ink-shadow-sm">
+      <summary class="flex items-center justify-between font-serif font-bold text-lg"> <span>Can I host this myself?</span> <i data-lucide="plus" class="w-5 h-5"></i> </summary>
+      <p class="mt-3 text-sm leading-relaxed text-neutral-800">Yes. The service is designed for Vercel serverless functions. All endpoints are pure SVG generators. No database, no auth, no storage required.</p>
+     </details>
+     <details class="border-2 border-black bg-white p-5 ink-shadow-sm">
+      <summary class="flex items-center justify-between font-serif font-bold text-lg"> <span>Is this free?</span> <i data-lucide="plus" class="w-5 h-5"></i> </summary>
+      <p class="mt-3 text-sm leading-relaxed text-neutral-800">Forever. No accounts, no API keys, no rate limits. Use it, remix it, build on it.</p>
+     </details>
+    </div>
+   </section><!-- COLOPHON / FOOTER -->
+   <footer class="mt-12 border-t-2 border-black bg-[var(--ink)] text-[var(--paper)]">
+    <div class="max-w-[1400px] mx-auto px-6 py-10">
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="md:col-span-2">
+       <div class="font-mono text-[10px] uppercase tracking-[0.25em] opacity-70 mb-2">
+        Made with care
+       </div>
+       <h4 class="font-serif font-black text-3xl leading-none">Stylish Readme</h4>
+       <p class="mt-3 text-sm max-w-md opacity-80 leading-relaxed">Make your GitHub profile shine. Live widgets, clean design, no complexity. Just copy, paste, and done.</p>
+      </div>
+      <div>
+       <div class="font-mono text-[10px] uppercase tracking-[0.25em] opacity-70 mb-3">
+        Widgets
+       </div>
+       <ul class="space-y-1.5 text-sm">
+        <li>Time badges</li>
+        <li>Digital clocks</li>
+        <li>Daily quotes</li>
+        <li>Profile cards</li>
+        <li>Date stamps</li>
+        <li>Timezone info</li>
+       </ul>
+      </div>
+      <div>
+       <div class="font-mono text-[10px] uppercase tracking-[0.25em] opacity-70 mb-3">
+        Tech
+       </div>
+       <ul class="space-y-1.5 text-sm">
+        <li>Serverless</li>
+        <li>Pure SVG</li>
+        <li>8 themes</li>
+        <li>400+ zones</li>
+        <li>No storage</li>
+       </ul>
+      </div>
+     </div>
+     <div class="mt-8 pt-4 border-t border-[var(--paper)] border-opacity-20 flex flex-wrap items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-widest opacity-80">
+      <span>© 2025 Stylish Readme</span> <span>Made for developers</span> <span>v1.0</span>
+     </div>
+    </div>
+   </footer>
+  </div>
+  <div id="toast" class="toast">
+   Copied to clipboard
+  </div>
+  <script>
+  // ========== ELEMENT SDK ==========
+  const defaultConfig = {};
+  if (window.elementSdk) {
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange: async () => {},
+      mapToCapabilities: () => ({ recolorables: [], borderables: [], fontEditable: undefined, fontSizeable: undefined }),
+      mapToEditPanelValues: () => new Map()
+    });
+  }
+
+  // ========== STATE ==========
+  const WIDGETS = [
+    { id:'time',    label:'Time Badge',       icon:'clock' },
+    { id:'clock',   label:'Digital Clock',    icon:'watch' },
+    { id:'date',    label:'Date Stamp',       icon:'calendar' },
+    { id:'quote',   label:'Daily Quote',      icon:'quote' },
+    { id:'flag',    label:'Country Flag',     icon:'flag' },
+    { id:'timezone',label:'Timezone Banner',  icon:'globe' },
+    { id:'streak',  label:'Day Counter',      icon:'flame' },
+    { id:'music', label:'Now Playing',     icon:'music' }
+  ];
+
+  const THEMES = [
+    { id:'classic',  name:'Classic',  bg:'#1a1a1a', fg:'#f4f1ea' },
+    { id:'paper',    name:'Paper',    bg:'#f4f1ea', fg:'#1a1a1a' },
+    { id:'terminal', name:'Terminal', bg:'#0d1117', fg:'#7ee787' },
+    { id:'retro',    name:'Retro',    bg:'#fbbf24', fg:'#1a1a1a' },
+    { id:'ocean',    name:'Ocean',    bg:'#0c4a6e', fg:'#e0f2fe' },
+    { id:'crimson',  name:'Crimson',  bg:'#7f1d1d', fg:'#fef2f2' },
+    { id:'forest',   name:'Forest',   bg:'#14532d', fg:'#ecfccb' },
+    { id:'ink',      name:'Ink',      bg:'#f4f1ea', fg:'#1a1a1a', border:true }
+  ];
+
+  const TIMEZONES = [
+    { id:'UTC', label:'UTC · Coordinated Universal', offset:0 },
+    { id:'Asia/Kolkata', label:'India · IST', offset:5.5 },
+    { id:'Europe/London', label:'London · GMT/BST', offset:0 },
+    { id:'Europe/Paris', label:'Paris · CET/CEST', offset:1 },
+    { id:'America/New_York', label:'New York · EST/EDT', offset:-5 },
+    { id:'America/Los_Angeles', label:'Los Angeles · PST/PDT', offset:-8 },
+    { id:'America/Chicago', label:'Chicago · CST/CDT', offset:-6 },
+    { id:'America/Sao_Paulo', label:'São Paulo · BRT', offset:-3 },
+    { id:'Europe/Berlin', label:'Berlin · CET/CEST', offset:1 },
+    { id:'Europe/Moscow', label:'Moscow · MSK', offset:3 },
+    { id:'Asia/Dubai', label:'Dubai · GST', offset:4 },
+    { id:'Asia/Karachi', label:'Karachi · PKT', offset:5 },
+    { id:'Asia/Dhaka', label:'Dhaka · BST', offset:6 },
+    { id:'Asia/Bangkok', label:'Bangkok · ICT', offset:7 },
+    { id:'Asia/Shanghai', label:'Shanghai · CST', offset:8 },
+    { id:'Asia/Singapore', label:'Singapore · SGT', offset:8 },
+    { id:'Asia/Tokyo', label:'Tokyo · JST', offset:9 },
+    { id:'Australia/Sydney', label:'Sydney · AEST/AEDT', offset:10 },
+    { id:'Pacific/Auckland', label:'Auckland · NZST', offset:12 }
+  ];
+
+  const COUNTRIES = [
+    { code:'IN', name:'India', flag:'🇮🇳' },
+    { code:'US', name:'United States', flag:'🇺🇸' },
+    { code:'GB', name:'United Kingdom', flag:'🇬🇧' },
+    { code:'PK', name:'Pakistan', flag:'🇵🇰' },
+    { code:'DE', name:'Germany', flag:'🇩🇪' },
+    { code:'FR', name:'France', flag:'🇫🇷' },
+    { code:'JP', name:'Japan', flag:'🇯🇵' },
+    { code:'CN', name:'China', flag:'🇨🇳' },
+    { code:'BR', name:'Brazil', flag:'🇧🇷' },
+    { code:'CA', name:'Canada', flag:'🇨🇦' },
+    { code:'AU', name:'Australia', flag:'🇦🇺' },
+    { code:'MX', name:'Mexico', flag:'🇲🇽' },
+    { code:'IT', name:'Italy', flag:'🇮🇹' },
+    { code:'ES', name:'Spain', flag:'🇪🇸' },
+    { code:'NL', name:'Netherlands', flag:'🇳🇱' },
+    { code:'SE', name:'Sweden', flag:'🇸🇪' },
+    { code:'NO', name:'Norway', flag:'🇳🇴' },
+    { code:'KR', name:'South Korea', flag:'🇰🇷' },
+    { code:'TR', name:'Turkey', flag:'🇹🇷' },
+    { code:'AE', name:'UAE', flag:'🇦🇪' },
+    { code:'SG', name:'Singapore', flag:'🇸🇬' },
+    { code:'ZA', name:'South Africa', flag:'🇿🇦' }
+  ];
+
+  const QUOTES = [
+    { q:'Simplicity is the soul of efficiency.', a:'Austin Freeman' },
+    { q:'Code is like humor. When you have to explain it, it is bad.', a:'Cory House' },
+    { q:'Make it work, make it right, make it fast.', a:'Kent Beck' },
+    { q:'The best error message is the one that never shows up.', a:'Thomas Fuchs' },
+    { q:'Programs must be written for people to read.', a:'Harold Abelson' },
+    { q:'First, solve the problem. Then, write the code.', a:'John Johnson' },
+    { q:'Any fool can write code a computer can understand.', a:'Martin Fowler' },
+    { q:'Deleted code is debugged code.', a:'Jeff Sickel' }
+  ];
+
+  const SONGS = [
+    // Bollywood
+    { title:'Tum Hi Ho', artist:'Arijit Singh', year:'2013', genre:'Bollywood' },
+    { title:'Tera Intezaar', artist:'Rahat Fateh Ali Khan', year:'2014', genre:'Bollywood' },
+    { title:'Chaleya', artist:'Arijit Singh', year:'2022', genre:'Bollywood' },
+    { title:'Kabira', artist:'Arijit Singh', year:'2012', genre:'Bollywood' },
+    { title:'Khiladi', artist:'Honey Singh', year:'2013', genre:'Bollywood' },
+    { title:'Shape of You', artist:'Ed Sheeran', year:'2017', genre:'Bollywood' },
+    // Hollywood
+    { title:'Blinding Lights', artist:'The Weeknd', year:'2019', genre:'Hollywood' },
+    { title:'Levitating', artist:'Dua Lipa', year:'2020', genre:'Hollywood' },
+    { title:'Anti-Hero', artist:'Taylor Swift', year:'2022', genre:'Hollywood' },
+    { title:'As It Was', artist:'Harry Styles', year:'2022', genre:'Hollywood' },
+    { title:'Heat Waves', artist:'Glass Animals', year:'2020', genre:'Hollywood' },
+    { title:'Bohemian Rhapsody', artist:'Queen', year:'1975', genre:'Hollywood' },
+    { title:'Imagine', artist:'John Lennon', year:'1971', genre:'Hollywood' },
+    { title:'Smells Like Teen Spirit', artist:'Nirvana', year:'1991', genre:'Hollywood' }
+  ];
+
+  const state = {
+    widget: 'time',
+    format: 'md',
+    // Time
+    timezone: 'Asia/Kolkata',
+    theme: 'classic',
+    timeFormat: '24h',
+    showSeconds: true,
+    showDate: true,
+    showDay: true,
+    label: 'Local Time',
+    // Flag
+    country: 'IN',
+    // Quote
+    quoteCategory: 'programming',
+    // Clock style
+    clockStyle: 'digital',
+    // Streak
+    startDate: '2024-01-01',
+    unit: 'days',
+    customLabel: 'Coding Streak',
+    // Music
+    musicSong: 'Tum Hi Ho',
+    musicArtist: 'Arijit Singh',
+    musicGenre: 'Bollywood',
+    musicListen: 'Now Playing'
+  };
+
+  // ========== UTIL ==========
+  function $(id){return document.getElementById(id);}
+  function scrollToId(id){ const el=$(id); if(el){el.scrollIntoView({behavior:'smooth',block:'start'});} }
+  function pad(n){return String(n).padStart(2,'0');}
+  function getTzTime(tz){
+    try{
+      const d = new Date();
+      const fmt = new Intl.DateTimeFormat('en-US',{timeZone:tz,hour:'numeric',minute:'numeric',second:'numeric',hour12:false,weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      const parts = fmt.formatToParts(d);
+      const get = t=>parts.find(p=>p.type===t)?.value;
+      return {
+        h: get('hour')==='24'?'00':get('hour'),
+        m: get('minute'),
+        s: get('second'),
+        weekday: get('weekday'),
+        day: get('day'),
+        month: get('month'),
+        year: get('year')
+      };
+    }catch(e){
+      const d = new Date();
+      return {h:pad(d.getHours()),m:pad(d.getMinutes()),s:pad(d.getSeconds()),weekday:d.toLocaleDateString('en-US',{weekday:'long'}),day:d.getDate(),month:d.toLocaleDateString('en-US',{month:'long'}),year:d.getFullYear()};
+    }
+  }
+  function themeObj(id){return THEMES.find(t=>t.id===id)||THEMES[0];}
+
+  // ========== TABS ==========
+  function renderTabs(){
+    const wrap = $('widgetTabs');
+    wrap.innerHTML = WIDGETS.map(w=>`
+      <button onclick="setWidget('${w.id}')" class="tab-btn ${state.widget===w.id?'tab-btn-active':''}" data-w="${w.id}">
+        <span class="inline-flex items-center gap-2">
+          <i data-lucide="${w.icon}" class="w-3.5 h-3.5"></i>
+          ${w.label}
+        </span>
+      </button>
+    `).join('');
+    lucide.createIcons();
+  }
+  function setWidget(id){
+    state.widget = id;
+    const w = WIDGETS.find(x=>x.id===id);
+    $('panelLabel').textContent = w.label.toUpperCase();
+    renderTabs();
+    renderControls();
+    renderPreview();
+    renderEmbed();
+  }
+
+  // ========== CONTROLS ==========
+  function themeSwatches(){
+    return `<div class="flex flex-wrap gap-2">${THEMES.map(t=>`
+      <button onclick="setField('theme','${t.id}')" class="swatch ${state.theme===t.id?'swatch-active':''}" title="${t.name}" style="background:${t.bg};${t.border?'box-shadow:inset 0 0 0 2px '+t.fg:''}"></button>
+    `).join('')}</div>
+    <div class="font-mono text-[10px] uppercase tracking-wider mt-2 text-neutral-600">Selected: <span class="font-bold text-[var(--ink)]">${themeObj(state.theme).name}</span></div>`;
+  }
+
+  function renderControls(){
+    const area = $('controlsArea');
+    let html = '';
+
+    if (state.widget==='time' || state.widget==='clock' || state.widget==='timezone'){
+      html += `
+        <div class="mb-5">
+          <label class="label-tag">Timezone</label>
+          <select class="input-field" onchange="setField('timezone',this.value)">
+            ${TIMEZONES.map(tz=>`<option value="${tz.id}" ${state.timezone===tz.id?'selected':''}>${tz.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Theme</label>
+          ${themeSwatches()}
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Time Format</label>
+          <div class="flex gap-2">
+            <button onclick="setField('timeFormat','24h')" class="chip ${state.timeFormat==='24h'?'chip-active':''}">24-Hour</button>
+            <button onclick="setField('timeFormat','12h')" class="chip ${state.timeFormat==='12h'?'chip-active':''}">12-Hour</button>
+          </div>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Custom Label</label>
+          <input class="input-field" value="${state.label}" oninput="setField('label',this.value)" placeholder="e.g. Local Time"/>
+        </div>
+        <div class="mb-3 space-y-2">
+          <label class="flex items-center gap-3 cursor-pointer font-mono text-xs">
+            <input type="checkbox" ${state.showSeconds?'checked':''} onchange="setField('showSeconds',this.checked)" class="w-4 h-4 accent-black"/>
+            <span class="uppercase tracking-wider">Show seconds</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer font-mono text-xs">
+            <input type="checkbox" ${state.showDate?'checked':''} onchange="setField('showDate',this.checked)" class="w-4 h-4 accent-black"/>
+            <span class="uppercase tracking-wider">Show date</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer font-mono text-xs">
+            <input type="checkbox" ${state.showDay?'checked':''} onchange="setField('showDay',this.checked)" class="w-4 h-4 accent-black"/>
+            <span class="uppercase tracking-wider">Show day of week</span>
+          </label>
+        </div>
+      `;
+    }
+    else if (state.widget==='date'){
+      html += `
+        <div class="mb-5">
+          <label class="label-tag">Timezone</label>
+          <select class="input-field" onchange="setField('timezone',this.value)">
+            ${TIMEZONES.map(tz=>`<option value="${tz.id}" ${state.timezone===tz.id?'selected':''}>${tz.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Theme</label>
+          ${themeSwatches()}
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Custom Label</label>
+          <input class="input-field" value="${state.label}" oninput="setField('label',this.value)" placeholder="e.g. Today"/>
+        </div>
+      `;
+    }
+    else if (state.widget==='quote'){
+      html += `
+        <div class="mb-5">
+          <label class="label-tag">Category</label>
+          <select class="input-field" onchange="setField('quoteCategory',this.value)">
+            <option value="programming" ${state.quoteCategory==='programming'?'selected':''}>Programming</option>
+            <option value="motivation" ${state.quoteCategory==='motivation'?'selected':''}>Motivation</option>
+            <option value="wisdom" ${state.quoteCategory==='wisdom'?'selected':''}>Wisdom</option>
+            <option value="random" ${state.quoteCategory==='random'?'selected':''}>Random</option>
+          </select>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Theme</label>
+          ${themeSwatches()}
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Header Label</label>
+          <input class="input-field" value="${state.label}" oninput="setField('label',this.value)" placeholder="e.g. Quote of the Day"/>
+        </div>
+        <div class="hatch p-3 text-[11px] font-mono leading-relaxed" style="background-color:var(--paper-2);">
+          <strong>Note:</strong> A new quote is fetched each day the widget is viewed.
+        </div>
+      `;
+    }
+    else if (state.widget==='flag'){
+      html += `
+        <div class="mb-5">
+          <label class="label-tag">Country</label>
+          <select class="input-field" onchange="setField('country',this.value)">
+            ${COUNTRIES.map(c=>`<option value="${c.code}" ${state.country===c.code?'selected':''}>${c.flag} ${c.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Theme</label>
+          ${themeSwatches()}
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Custom Label</label>
+          <input class="input-field" value="${state.label}" oninput="setField('label',this.value)" placeholder="e.g. Based in"/>
+        </div>
+      `;
+    }
+    else if (state.widget==='streak'){
+      html += `
+        <div class="mb-5">
+          <label class="label-tag">Start Date</label>
+          <input type="date" class="input-field" value="${state.startDate}" onchange="setField('startDate',this.value)"/>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Unit</label>
+          <div class="flex gap-2 flex-wrap">
+            <button onclick="setField('unit','days')" class="chip ${state.unit==='days'?'chip-active':''}">Days</button>
+            <button onclick="setField('unit','weeks')" class="chip ${state.unit==='weeks'?'chip-active':''}">Weeks</button>
+            <button onclick="setField('unit','months')" class="chip ${state.unit==='months'?'chip-active':''}">Months</button>
+            <button onclick="setField('unit','years')" class="chip ${state.unit==='years'?'chip-active':''}">Years</button>
+          </div>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Theme</label>
+          ${themeSwatches()}
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Label</label>
+          <input class="input-field" value="${state.customLabel}" oninput="setField('customLabel',this.value)"/>
+        </div>
+      `;
+    }
+    else if (state.widget==='music'){
+      const bollywood = SONGS.filter(s=>s.genre==='Bollywood');
+      const hollywood = SONGS.filter(s=>s.genre==='Hollywood');
+      html += `
+        <div class="mb-5">
+          <label class="label-tag">Status Label</label>
+          <input class="input-field" value="${state.musicListen}" oninput="setField('musicListen',this.value)" placeholder="e.g. Now Playing"/>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Pick or Enter Song</label>
+          <select class="input-field" onchange="setField('musicSong',this.value);setField('musicArtist',this.options[this.selectedIndex].dataset.artist);">
+            <option value="">-- Custom Song --</option>
+            <optgroup label="🎬 Bollywood Hits">
+              ${bollywood.map(s=>`<option value="${s.title}" data-artist="${s.artist}" ${state.musicSong===s.title?'selected':''}>${s.title} · ${s.artist}</option>`).join('')}
+            </optgroup>
+            <optgroup label="🎵 Hollywood Classics">
+              ${hollywood.map(s=>`<option value="${s.title}" data-artist="${s.artist}" ${state.musicSong===s.title?'selected':''}>${s.title} · ${s.artist}</option>`).join('')}
+            </optgroup>
+          </select>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Song Title</label>
+          <input class="input-field" value="${state.musicSong}" oninput="setField('musicSong',this.value)" placeholder="e.g. Blinding Lights"/>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Artist Name</label>
+          <input class="input-field" value="${state.musicArtist}" oninput="setField('musicArtist',this.value)" placeholder="e.g. The Weeknd"/>
+        </div>
+        <div class="mb-5">
+          <label class="label-tag">Theme</label>
+          ${themeSwatches()}
+        </div>
+        <div class="hatch p-3 text-[11px] font-mono leading-relaxed" style="background-color:var(--paper-2);">
+          <strong>Shuffle:</strong> Click the dropdown to pick from 14 pre-loaded songs, or enter your own.
+        </div>
+      `;
+    }
+
+    area.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  function setField(k,v){
+    state[k]=v;
+    renderControls();
+    renderPreview();
+    renderEmbed();
+  }
+
+  // ========== PREVIEW (SVG-like) ==========
+  function svgTimeBadge(){
+    const t = getTzTime(state.timezone);
+    const theme = themeObj(state.theme);
+    let timeStr, suffix='';
+    if (state.timeFormat==='12h'){
+      let h = parseInt(t.h);
+      suffix = h>=12?' PM':' AM';
+      h = h%12||12;
+      timeStr = `${pad(h)}:${t.m}${state.showSeconds?':'+t.s:''}`;
+    } else {
+      timeStr = `${t.h}:${t.m}${state.showSeconds?':'+t.s:''}`;
+    }
+    const tzShort = state.timezone.split('/').pop().replace('_',' ');
+    const borderStyle = theme.border?`stroke:${theme.fg};stroke-width:2;`:'';
+    const width = 320, height = state.showDate||state.showDay?140:90;
+
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace;">
+      <rect x="1" y="1" width="${width-2}" height="${height-2}" fill="${theme.bg}" style="${borderStyle}"/>
+      <text x="20" y="28" fill="${theme.fg}" font-size="10" font-weight="700" letter-spacing="2" opacity="0.7">${(state.label||'LOCAL TIME').toUpperCase()} · ${tzShort.toUpperCase()}</text>
+      <text x="20" y="70" fill="${theme.fg}" font-size="42" font-weight="700" letter-spacing="-1">${timeStr}<tspan font-size="20" opacity="0.7">${suffix}</tspan></text>
+      ${state.showDate||state.showDay?`<line x1="20" y1="88" x2="${width-20}" y2="88" stroke="${theme.fg}" stroke-width="1" opacity="0.3"/>`:''}
+      ${state.showDay?`<text x="20" y="110" fill="${theme.fg}" font-size="12" font-weight="600" opacity="0.85">${t.weekday}</text>`:''}
+      ${state.showDate?`<text x="${width-20}" y="110" text-anchor="end" fill="${theme.fg}" font-size="12" font-weight="600" opacity="0.85">${t.day} ${t.month} ${t.year}</text>`:''}
+    </svg>`;
+  }
+
+  function svgClock(){
+    const t = getTzTime(state.timezone);
+    const theme = themeObj(state.theme);
+    const borderStyle = theme.border?`stroke:${theme.fg};stroke-width:2;`:'';
+    let h = state.timeFormat==='12h'?(parseInt(t.h)%12||12):parseInt(t.h);
+    const hh = pad(h);
+    const width=380, height=110;
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace;">
+      <rect x="1" y="1" width="${width-2}" height="${height-2}" fill="${theme.bg}" style="${borderStyle}"/>
+      <text x="20" y="28" fill="${theme.fg}" font-size="10" font-weight="700" letter-spacing="3" opacity="0.6">◉ ${(state.label||'DIGITAL CLOCK').toUpperCase()}</text>
+      <g transform="translate(20,45)">
+        <rect x="0" y="0" width="60" height="50" fill="none" stroke="${theme.fg}" stroke-width="1.5" opacity="0.4"/>
+        <text x="30" y="38" text-anchor="middle" fill="${theme.fg}" font-size="32" font-weight="700">${hh}</text>
+        <text x="75" y="32" fill="${theme.fg}" font-size="28" font-weight="700">:</text>
+        <rect x="90" y="0" width="60" height="50" fill="none" stroke="${theme.fg}" stroke-width="1.5" opacity="0.4"/>
+        <text x="120" y="38" text-anchor="middle" fill="${theme.fg}" font-size="32" font-weight="700">${t.m}</text>
+        ${state.showSeconds?`
+        <text x="165" y="32" fill="${theme.fg}" font-size="28" font-weight="700" opacity="0.7">:</text>
+        <rect x="180" y="0" width="60" height="50" fill="none" stroke="${theme.fg}" stroke-width="1.5" opacity="0.4"/>
+        <text x="210" y="38" text-anchor="middle" fill="${theme.fg}" font-size="32" font-weight="700" opacity="0.7">${t.s}</text>
+        `:''}
+        <text x="260" y="20" fill="${theme.fg}" font-size="10" font-weight="700" letter-spacing="1" opacity="0.6">${state.timezone.split('/').pop().replace('_',' ').toUpperCase()}</text>
+        <text x="260" y="38" fill="${theme.fg}" font-size="14" font-weight="700">${state.timeFormat==='12h'?(parseInt(t.h)>=12?'PM':'AM'):'24H'}</text>
+      </g>
+    </svg>`;
+  }
+
+  function svgDate(){
+    const t = getTzTime(state.timezone);
+    const theme = themeObj(state.theme);
+    const borderStyle = theme.border?`stroke:${theme.fg};stroke-width:2;`:'';
+    const width=260, height=130;
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace;">
+      <rect x="1" y="1" width="${width-2}" height="${height-2}" fill="${theme.bg}" style="${borderStyle}"/>
+      <rect x="20" y="20" width="60" height="90" fill="none" stroke="${theme.fg}" stroke-width="2"/>
+      <rect x="20" y="20" width="60" height="18" fill="${theme.fg}"/>
+      <text x="50" y="33" text-anchor="middle" fill="${theme.bg}" font-size="10" font-weight="700" letter-spacing="1">${t.month.slice(0,3).toUpperCase()}</text>
+      <text x="50" y="78" text-anchor="middle" fill="${theme.fg}" font-size="36" font-weight="700" font-family="Fraunces,serif">${t.day}</text>
+      <text x="50" y="100" text-anchor="middle" fill="${theme.fg}" font-size="9" font-weight="700" letter-spacing="1" opacity="0.7">${t.year}</text>
+      <text x="100" y="40" fill="${theme.fg}" font-size="10" font-weight="700" letter-spacing="2" opacity="0.6">${(state.label||'TODAY').toUpperCase()}</text>
+      <text x="100" y="65" fill="${theme.fg}" font-size="20" font-weight="700" font-family="Fraunces,serif">${t.weekday}</text>
+      <text x="100" y="95" fill="${theme.fg}" font-size="11" font-weight="500" opacity="0.7">${t.month} ${t.day}</text>
+      <text x="100" y="110" fill="${theme.fg}" font-size="8" font-weight="700" letter-spacing="1" opacity="0.5">◆ ${state.timezone.split('/').pop().replace('_',' ').toUpperCase()}</text>
+    </svg>`;
+  }
+
+  function svgQuote(){
+    const theme = themeObj(state.theme);
+    const borderStyle = theme.border?`stroke:${theme.fg};stroke-width:2;`:'';
+    const today = new Date().getDate();
+    const quote = QUOTES[today % QUOTES.length];
+    const width=440, height=130;
+    // split quote
+    const words = quote.q.split(' ');
+    const line1=[], line2=[];
+    let len=0;
+    words.forEach(w=>{
+      if(len+w.length<42){ line1.push(w); len+=w.length+1; } else line2.push(w);
+    });
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="font-family:'Fraunces',serif;">
+      <rect x="1" y="1" width="${width-2}" height="${height-2}" fill="${theme.bg}" style="${borderStyle}"/>
+      <text x="20" y="38" fill="${theme.fg}" font-size="44" font-weight="900" opacity="0.5">"</text>
+      <text x="50" y="30" fill="${theme.fg}" font-size="10" font-weight="700" letter-spacing="2" opacity="0.6" font-family="JetBrains Mono,monospace">${(state.label||'QUOTE OF THE DAY').toUpperCase()}</text>
+      <text x="50" y="56" fill="${theme.fg}" font-size="15" font-weight="500" font-style="italic">${line1.join(' ')}</text>
+      ${line2.length?`<text x="50" y="76" fill="${theme.fg}" font-size="15" font-weight="500" font-style="italic">${line2.join(' ')}</text>`:''}
+      <line x1="50" y1="92" x2="100" y2="92" stroke="${theme.fg}" stroke-width="2"/>
+      <text x="50" y="108" fill="${theme.fg}" font-size="11" font-weight="600" font-family="JetBrains Mono,monospace" opacity="0.85">${quote.a}</text>
+    </svg>`;
+  }
+
+  function svgFlag(){
+    const theme = themeObj(state.theme);
+    const country = COUNTRIES.find(c=>c.code===state.country);
+    const borderStyle = theme.border?`stroke:${theme.fg};stroke-width:2;`:'';
+    const width=280, height=90;
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace;">
+      <rect x="1" y="1" width="${width-2}" height="${height-2}" fill="${theme.bg}" style="${borderStyle}"/>
+      <text x="20" y="56" font-size="42">${country.flag}</text>
+      <text x="76" y="34" fill="${theme.fg}" font-size="9" font-weight="700" letter-spacing="2" opacity="0.65">${(state.label||'BASED IN').toUpperCase()}</text>
+      <text x="76" y="58" fill="${theme.fg}" font-size="18" font-weight="700" font-family="Fraunces,serif">${country.name}</text>
+      <text x="76" y="74" fill="${theme.fg}" font-size="9" font-weight="700" letter-spacing="1" opacity="0.55">COUNTRY CODE · ${country.code}</text>
+    </svg>`;
+  }
+
+  function svgTimezone(){
+    const t = getTzTime(state.timezone);
+    const theme = themeObj(state.theme);
+    const borderStyle = theme.border?`stroke:${theme.fg};stroke-width:2;`:'';
+    const tz = TIMEZONES.find(z=>z.id===state.timezone);
+    const width=460, height=90;
+    let timeStr;
+    if (state.timeFormat==='12h'){
+      let h=parseInt(t.h); const sf=h>=12?'PM':'AM'; h=h%12||12;
+      timeStr=`${pad(h)}:${t.m} ${sf}`;
+    } else timeStr=`${t.h}:${t.m}`;
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace;">
+      <rect x="1" y="1" width="${width-2}" height="${height-2}" fill="${theme.bg}" style="${borderStyle}"/>
+      <circle cx="45" cy="45" r="22" fill="none" stroke="${theme.fg}" stroke-width="2"/>
+      <circle cx="45" cy="45" r="2" fill="${theme.fg}"/>
+      <line x1="45" y1="45" x2="45" y2="30" stroke="${theme.fg}" stroke-width="2.5"/>
+      <line x1="45" y1="45" x2="56" y2="45" stroke="${theme.fg}" stroke-width="2"/>
+      <text x="85" y="30" fill="${theme.fg}" font-size="9" font-weight="700" letter-spacing="2" opacity="0.65">◆ TIMEZONE BANNER ◆</text>
+      <text x="85" y="52" fill="${theme.fg}" font-size="20" font-weight="700" font-family="Fraunces,serif">${timeStr}</text>
+      <text x="85" y="70" fill="${theme.fg}" font-size="10" font-weight="600" opacity="0.75">${tz.label}</text>
+      <text x="${width-20}" y="30" text-anchor="end" fill="${theme.fg}" font-size="9" font-weight="700" opacity="0.65">${t.weekday.slice(0,3).toUpperCase()}</text>
+      <text x="${width-20}" y="52" text-anchor="end" fill="${theme.fg}" font-size="16" font-weight="700" font-family="Fraunces,serif">${t.day}</text>
+      <text x="${width-20}" y="70" text-anchor="end" fill="${theme.fg}" font-size="10" font-weight="600" opacity="0.75">${t.month}</text>
+    </svg>`;
+  }
+
+  function svgStreak(){
+    const theme = themeObj(state.theme);
+    const borderStyle = theme.border?`stroke:${theme.fg};stroke-width:2;`:'';
+    const start = new Date(state.startDate);
+    const now = new Date();
+    const diffMs = now-start;
+    let count, unit=state.unit;
+    if (unit==='days') count=Math.floor(diffMs/86400000);
+    else if (unit==='weeks') count=Math.floor(diffMs/(86400000*7));
+    else if (unit==='months') count=Math.floor(diffMs/(86400000*30));
+    else count=Math.floor(diffMs/(86400000*365));
+    const width=320, height=100;
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace;">
+      <rect x="1" y="1" width="${width-2}" height="${height-2}" fill="${theme.bg}" style="${borderStyle}"/>
+      <text x="20" y="30" fill="${theme.fg}" font-size="9" font-weight="700" letter-spacing="2" opacity="0.65">◆ ${state.customLabel.toUpperCase()} ◆</text>
+      <text x="20" y="72" fill="${theme.fg}" font-size="42" font-weight="900" font-family="Fraunces,serif">${count}</text>
+      <text x="${20 + String(count).length*24 + 12}" y="68" fill="${theme.fg}" font-size="16" font-weight="600" opacity="0.8">${unit}</text>
+      <text x="20" y="90" fill="${theme.fg}" font-size="9" font-weight="600" letter-spacing="1" opacity="0.55">SINCE ${start.toDateString().toUpperCase()}</text>
+    </svg>`;
+  }
+
+  function svgMusic(){
+    const theme = themeObj(state.theme);
+    const borderStyle = theme.border?`stroke:${theme.fg};stroke-width:2;`:'';
+    const width=380, height=140;
+    
+    // Music notes animation effect (static SVG)
+    const musicNote1 = `
+      <g transform="translate(30, 35)">
+        <ellipse cx="0" cy="8" rx="3" ry="4" fill="${theme.fg}"/>
+        <path d="M 3 8 Q 5 6 5 2" stroke="${theme.fg}" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M 5 2 L 5 -2" stroke="${theme.fg}" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </g>
+    `;
+    
+    const musicNote2 = `
+      <g transform="translate(42, 25)">
+        <ellipse cx="0" cy="8" rx="3" ry="4" fill="${theme.fg}" opacity="0.6"/>
+        <path d="M 3 8 Q 5 5 5 0" stroke="${theme.fg}" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+        <path d="M 5 0 L 5 -4" stroke="${theme.fg}" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+      </g>
+    `;
+    
+    const playIcon = `
+      <g transform="translate(24, 70)">
+        <circle cx="8" cy="8" r="7" fill="none" stroke="${theme.fg}" stroke-width="1.5"/>
+        <path d="M 5 5 L 5 11 L 11 8 Z" fill="${theme.fg}"/>
+      </g>
+    `;
+    
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace;">
+      <defs>
+        <style>
+          @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-3px); } }
+          .note1 { animation: float 1.2s ease-in-out infinite; }
+          .note2 { animation: float 1.5s ease-in-out infinite 0.2s; }
+        </style>
+      </defs>
+      
+      <rect x="1" y="1" width="${width-2}" height="${height-2}" fill="${theme.bg}" style="${borderStyle}"/>
+      
+      <text x="20" y="25" fill="${theme.fg}" font-size="9" font-weight="700" letter-spacing="2" opacity="0.65">◆ ${state.musicListen.toUpperCase()} ◆</text>
+      
+      <g class="note1">${musicNote1}</g>
+      <g class="note2">${musicNote2}</g>
+      
+      ${playIcon}
+      
+      <text x="65" y="48" fill="${theme.fg}" font-size="13" font-weight="700" font-family="Fraunces,serif">${state.musicSong}</text>
+      <text x="65" y="65" fill="${theme.fg}" font-size="10" font-weight="500" opacity="0.7">${state.musicArtist}</text>
+      
+      <line x1="20" y1="80" x2="${width-20}" y2="80" stroke="${theme.fg}" stroke-width="1" opacity="0.2"/>
+      
+      <rect x="20" y="92" width="${width-40}" height="3" fill="none" stroke="${theme.fg}" stroke-width="1" rx="1.5" opacity="0.3"/>
+      <rect x="20" y="92" width="${(width-40)*0.35}" height="3" fill="${theme.fg}" rx="1.5" opacity="0.7"/>
+      
+      <text x="${width-20}" y="127" text-anchor="end" fill="${theme.fg}" font-size="8" font-weight="600" opacity="0.4">Streaming</text>
+    </svg>`;
+  }
+
+  function getSvg(){
+    switch(state.widget){
+      case 'time': return svgTimeBadge();
+      case 'clock': return svgClock();
+      case 'date': return svgDate();
+      case 'quote': return svgQuote();
+      case 'flag': return svgFlag();
+      case 'timezone': return svgTimezone();
+      case 'streak': return svgStreak();
+      case 'music': return svgMusic();
+    }
+    return '';
+  }
+
+  function renderPreview(){
+    $('previewStage').innerHTML = getSvg();
+    const size = (new Blob([getSvg()]).size/1024).toFixed(1);
+    $('sizeInfo').textContent = size;
+  }
+
+  // ========== EMBED ==========
+  function buildUrl(){
+    // Get current domain to make it deployment-agnostic
+    const protocol = window.location.protocol;
+    const host = window.location.host;
+    const base = `${protocol}//${host}/api`;
+    const params = new URLSearchParams();
+    Object.entries(state).forEach(([k,v])=>{
+      if (['format'].includes(k)) return;
+      if (typeof v === 'boolean') params.set(k, v?'1':'0');
+      else params.set(k, v);
+    });
+    return `${base}/${state.widget}.svg?${params.toString()}`;
+  }
+
+  function renderEmbed(){
+    const url = buildUrl();
+    const alt = WIDGETS.find(w=>w.id===state.widget).label;
+    let code='';
+    if (state.format==='md'){
+      code = `![${alt}](${url})`;
+    } else if (state.format==='html'){
+      code = `<img src="${url}" alt="${alt}" />`;
+    } else {
+      code = url;
+    }
+    // syntax highlight-ish for markdown/html
+    let display = code
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if (state.format==='html'){
+      display = display
+        .replace(/(&lt;\/?[\w]+)/g,'<span class="tag">$1</span>')
+        .replace(/(\w+)=/g,'<span class="attr">$1</span>=')
+        .replace(/"([^"]*)"/g,'"<span class="str">$1</span>"');
+    } else if (state.format==='md'){
+      display = display.replace(/!\[/g,'<span class="tag">![</span>').replace(/\]\(/,'<span class="tag">](</span>').replace(/\)$/,'<span class="tag">)</span>');
+    }
+    $('embedCode').innerHTML = display;
+  }
+
+  function switchFormat(f){
+    state.format=f;
+    ['md','html','url'].forEach(x=>{
+      $('fmt'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('tab-btn-active', x===f);
+    });
+    renderEmbed();
+  }
+
+  function copyEmbed(){
+    const url = buildUrl();
+    const alt = WIDGETS.find(w=>w.id===state.widget).label;
+    let code = state.format==='md'?`![${alt}](${url})`:state.format==='html'?`<img src="${url}" alt="${alt}" />`:url;
+    navigator.clipboard.writeText(code).then(()=>{
+      const t=$('toast'); t.classList.add('show'); $('copyLabel').textContent='Copied ✓';
+      setTimeout(()=>{t.classList.remove('show'); $('copyLabel').textContent='Copy';},1800);
+    }).catch(()=>{
+      const t=$('toast'); t.textContent='Press Ctrl+C'; t.classList.add('show');
+      setTimeout(()=>{t.classList.remove('show'); t.textContent='Copied to clipboard';},1800);
+    });
+  }
+
+  // ========== GALLERY ==========
+  const PRESETS = [
+    { title:'Tokyo Time', w:'time', overrides:{timezone:'Asia/Tokyo',theme:'terminal',label:'Tokyo'} },
+    { title:'New York Clock', w:'clock', overrides:{timezone:'America/New_York',theme:'paper',label:'Eastern'} },
+    { title:'Daily Quote', w:'quote', overrides:{theme:'crimson',label:'Today'} },
+    { title:'London Date', w:'date', overrides:{theme:'retro',timezone:'Europe/London',label:'Today'} },
+    { title:'NYC Timezone', w:'timezone', overrides:{theme:'ocean',timezone:'America/New_York'} },
+    { title:'India Flag', w:'flag', overrides:{country:'IN',theme:'forest',label:'From'} },
+    { title:'Dev Streak', w:'streak', overrides:{theme:'forest',unit:'days',customLabel:'Coding'} },
+    { title:'Now Playing · Ocean', w:'music', overrides:{theme:'ocean',musicSong:'Blinding Lights',musicArtist:'The Weeknd'} }
+  ];
+
+  function renderGallery(){
+    const wrap = $('galleryGrid');
+    wrap.innerHTML = PRESETS.map((p,i)=>{
+      const saved = {...state};
+      Object.assign(state, {widget:p.w}, p.overrides);
+      const svg = getSvg();
+      Object.assign(state, saved);
+      return `
+        <article class="preview-card p-4 flex flex-col gap-3 cursor-pointer group" onclick="loadPreset(${i})">
+          <div class="flex items-center justify-between">
+            <span class="chip">${p.w}</span>
+            <span class="font-mono text-[10px] text-neutral-500">№ ${pad(i+1)}</span>
+          </div>
+          <div class="bg-[var(--paper)] border-2 border-black p-3 flex items-center justify-center min-h-[120px] overflow-hidden">
+            <div style="transform:scale(0.75);transform-origin:center;">${svg}</div>
+          </div>
+          <div class="flex items-center justify-between pt-1 border-t border-dashed border-black">
+            <span class="font-serif font-bold text-sm">${p.title}</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4 group-hover:translate-x-0.5 transition-transform"></i>
+          </div>
+        </article>
+      `;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  function loadPreset(i){
+    const p = PRESETS[i];
+    state.widget = p.w;
+    Object.assign(state, p.overrides);
+    $('panelLabel').textContent = WIDGETS.find(w=>w.id===p.w).label.toUpperCase();
+    renderTabs();
+    renderControls();
+    renderPreview();
+    renderEmbed();
+    scrollToId('workshop');
+  }
+
+  // ========== INIT ==========
+  function tickNow(){
+    const d = new Date();
+    $('nowChip').textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} LOCAL`;
+  }
+
+  function init(){
+    renderTabs();
+    renderControls();
+    renderPreview();
+    renderEmbed();
+    renderGallery();
+    tickNow();
+    setInterval(()=>{
+      tickNow();
+      renderPreview(); // keep time widgets ticking
+      renderGallery();
+    }, 1000);
+    lucide.createIcons();
+  }
+
+  // expose
+  window.setWidget=setWidget;
+  window.setField=setField;
+  window.switchFormat=switchFormat;
+  window.copyEmbed=copyEmbed;
+  window.loadPreset=loadPreset;
+  window.scrollToId=scrollToId;
+
+  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState!=='loading') init();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f56e41400fc97f7',t:'MTc3NzcyMzQ5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
